@@ -1,0 +1,14 @@
+services:
+  postgres_dbt:
+   image: postgres:15.4-alpine
+   volumes:
+     - ${PWD}/.docker/postgres:/var/lib/postgresql/data
+   networks:
+     - airflow
+   ports:
+     - 5433:5432
+   environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+   extra_hosts:
+     - "host.docker.internal:host-gateway"
