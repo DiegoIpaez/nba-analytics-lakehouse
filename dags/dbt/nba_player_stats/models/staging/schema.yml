@@ -1,0 +1,250 @@
+version: 2
+
+sources:
+  - name: public
+    description: "Raw data from the public schema"
+    tables:
+      - name: raw_player_stats
+        description: "Raw NBA player statistics data"
+        columns:
+          - name: Player_ID
+            description: "Unique identifier for the player"
+          - name: SEASON_ID
+            description: "Season identifier"
+          - name: Game_ID
+            description: "Unique identifier for the game"
+          - name: GAME_DATE
+            description: "Date when the game was played"
+          - name: MATCHUP
+            description: "Team matchup information"
+          - name: WL
+            description: "Win/Loss indicator"
+          - name: MIN
+            description: "Minutes played"
+          - name: FGM
+            description: "Field goals made"
+          - name: FGA
+            description: "Field goals attempted"
+          - name: FG_PCT
+            description: "Field goal percentage (original)"
+          - name: FG3M
+            description: "Three-pointers made"
+          - name: FG3A
+            description: "Three-pointers attempted"
+          - name: FG3_PCT
+            description: "Three-point percentage (original)"
+          - name: FTM
+            description: "Free throws made"
+          - name: FTA
+            description: "Free throws attempted"
+          - name: FT_PCT
+            description: "Free throw percentage (original)"
+          - name: OREB
+            description: "Offensive rebounds"
+          - name: DREB
+            description: "Defensive rebounds"
+          - name: REB
+            description: "Total rebounds"
+          - name: AST
+            description: "Assists"
+          - name: STL
+            description: "Steals"
+          - name: BLK
+            description: "Blocks"
+          - name: TOV
+            description: "Turnovers"
+          - name: PF
+            description: "Personal fouls"
+          - name: PTS
+            description: "Points scored"
+          - name: PLUS_MINUS
+            description: "Plus/minus statistic"
+          - name: VIDEO_AVAILABLE
+            description: "Video availability indicator (1/0)"
+
+models:
+  - name: stg_player_stats
+    description: "Staged NBA player statistics with cleaned column names and calculated fields"
+    columns:
+      - name: player_id
+        description: "Unique identifier for the player"
+        tests:
+          - not_null
+
+      - name: season_id
+        description: "Season identifier"
+        tests:
+          - not_null
+
+      - name: game_id
+        description: "Unique identifier for the game"
+        tests:
+          - not_null
+
+      - name: game_date
+        description: "Date when the game was played (converted to date type)"
+        tests:
+          - not_null
+
+      - name: matchup
+        description: "Team matchup information (e.g., 'LAL vs. GSW')"
+
+      - name: win_loss
+        description: "Win/Loss indicator for the player's team"
+        tests:
+          - accepted_values:
+              values: ["W", "L"]
+
+      - name: minutes_played
+        description: "Minutes played in the game"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      # Field Goal Statistics
+      - name: field_goals_made
+        description: "Number of field goals made"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: field_goals_attempted
+        description: "Number of field goals attempted"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: field_goal_percentage_calculated
+        description: "Field goal percentage calculated from FGM/FGA"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: "between 0 and 1"
+
+      - name: field_goal_percentage_original
+        description: "Original field goal percentage from source data"
+
+      # Three-Point Statistics
+      - name: three_pointers_made
+        description: "Number of three-pointers made"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: three_pointers_attempted
+        description: "Number of three-pointers attempted"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: three_point_percentage_calculated
+        description: "Three-point percentage calculated from 3PM/3PA"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: "between 0 and 1"
+
+      - name: three_point_percentage_original
+        description: "Original three-point percentage from source data"
+
+      # Free Throw Statistics
+      - name: free_throws_made
+        description: "Number of free throws made"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: free_throws_attempted
+        description: "Number of free throws attempted"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: free_throw_percentage_calculated
+        description: "Free throw percentage calculated from FTM/FTA"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: "between 0 and 1"
+
+      - name: free_throw_percentage_original
+        description: "Original free throw percentage from source data"
+
+      # Rebounds
+      - name: offensive_rebounds
+        description: "Number of offensive rebounds"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: defensive_rebounds
+        description: "Number of defensive rebounds"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: total_rebounds
+        description: "Total number of rebounds (offensive + defensive)"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      # Other Statistics
+      - name: assists
+        description: "Number of assists"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: steals
+        description: "Number of steals"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: blocks
+        description: "Number of blocks"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: turnovers
+        description: "Number of turnovers"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: personal_fouls
+        description: "Number of personal fouls"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: points
+        description: "Total points scored"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: plus_minus
+        description: "Plus/minus statistic for the player"
+
+      - name: is_video_available
+        description: "Boolean indicating if video is available for this game"
+
+      # Calculated Fields
+      - name: total_shots_made
+        description: "Total shots made (FGM + 3PM + FTM)"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: total_shots_attempted
+        description: "Total shots attempted (FGA + 3PA + FTA)"
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       expression: ">= 0"
+
+      - name: stats_validation_error
+        description: "Data quality flag for impossible statistical combinations"
+        tests:
+          - accepted_values:
+              values: ["FGM > FGA", "3PM > 3PA", "FTM > FTA", "Negative Points"]
+              quote: true
