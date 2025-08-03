@@ -1,9 +1,11 @@
-import pandas as pd
 from datetime import datetime, timedelta
-from airflow.decorators import dag, task
-from airflow.providers.postgres.hooks.postgres import PostgresHook
+
+from airflow.decorators import dag, task, task_group
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
-from include.fetch_nba_data import fetch_players
+
+from include.constants import POSTGRES_CONN_ID
+from include.fetch_nba_data import fetch_players, fetch_player_stats
+from include.load_raw_nba_data import insert_players, insert_player_game_stats
 
 
 default_args = {
@@ -19,53 +21,62 @@ default_args = {
     start_date=datetime(2025, 8, 1),
     schedule_interval=None,
     catchup=False,
-    tags=["nba", "elt", "taskflow"],
+    tags=["nba", "elt", "taskflow", "grouped"],
+    description="ETL pipeline with grouped tasks for extracting and loading NBA data",
 )
 def nba_elt_pipeline():
-    """
-    DAG to extract, transform, and load NBA player data
-    """
-
-    create_tables_op = SQLExecuteQueryOperator(
+    create_tables = SQLExecuteQueryOperator(
         task_id="create_nba_raw_tables",
-        conn_id="postgres_default",
+        conn_id=POSTGRES_CONN_ID,
         sql="sql/create_nba_raw_tables.sql",
         show_return_value_in_logs=True,
     )
 
-    @task()
-    def extract_players():
-        """Extract players data from API and return as a list of dictionaries"""
-        players_df = fetch_players()
-        return players_df.to_dict("records")
+    @task_group(group_id="extract_group")
+    def extract_tasks():
+        """
+        Extract tasks for players and player game stats
+        Returns:
+            dict: A dictionary containing the extracted players and player game stats
+        """
 
-    @task()
-    def insert_players(players_data):
-        """Insert players data into raw_players table"""
-        players_df = pd.DataFrame(players_data)
-        hook = PostgresHook(postgres_conn_id="postgres_default")
-        rows = [
-            (
-                row["id"],
-                row["full_name"],
-                row.get("first_name", ""),
-                row.get("last_name", ""),
-                row.get("is_active", False),
-            )
-            for _, row in players_df.iterrows()
-        ]
-        hook.insert_rows(
-            table="raw_players",
-            rows=rows,
-            target_fields=["id", "full_name", "first_name", "last_name", "is_active"],
-            commit_every=1000,
-            replace=False,
-        )
+        @task()
+        def extract_players():
+            players_df = fetch_players()
+            return players_df.to_dict("records")
 
-    players_data = extract_players()
-    insert_task = insert_players(players_data)
+        @task()
+        def extract_player_stats(players):
+            stats_df = fetch_player_stats(players)
+            return stats_df.to_dict("records")
 
-    create_tables_op >> insert_task
+        players = extract_players()
+        stats = extract_player_stats(players)
+
+        return {"players": players, "stats": stats}
+
+    @task_group(group_id="load_group")
+    def load_tasks(players, stats):
+        """
+        Load tasks for players and player game stats
+        Args:
+            players (list): A list of dictionaries containing player metadata.
+            stats (list): A list of dictionaries containing player game stats.
+        """
+
+        @task()
+        def load_players(players):
+            insert_players(players)
+
+        @task()
+        def load_player_stats(stats):
+            insert_player_game_stats(stats)
+
+        load_players(players)
+        load_player_stats(stats)
+
+    extracted = extract_tasks()
+    create_tables >> load_tasks(players=extracted["players"], stats=extracted["stats"])
 
 
 nba_elt_pipeline()
