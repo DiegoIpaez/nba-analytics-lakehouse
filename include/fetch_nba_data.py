@@ -1,3 +1,4 @@
+import time
 import pickle
 import pandas as pd
 
@@ -29,9 +30,7 @@ def fetch_player_stats(players, season="2023-24"):
         pd.DataFrame: A DataFrame containing player stats for all players.
     """
     all_stats = []
-    print(
-        f"[info]  - [fetch] - [stats] - Starting stats fetch for {len(players)} players"
-    )
+    print(f"[info] - [stats] - Starting stats fetch for {len(players)} players")
 
     for player_idx, player in enumerate(players, start=1):
         key = player_stats_cache_key(player["id"], season)
@@ -46,13 +45,14 @@ def fetch_player_stats(players, season="2023-24"):
                 )
             else:
                 logs = playergamelog.PlayerGameLog(
-                    player_id=player["id"], season=season, timeout=300
+                    player_id=player["id"], season=season, timeout=30
                 )
                 df = logs.get_data_frames()[0]
                 df["player_id"] = player["id"]
                 redis_client.set(key, pickle.dumps(df))
+                time.sleep(1)
                 print(
-                    f"[api] - [fetch] - [stats] - [#{player_idx}/{len(players)}] Fetched and cached {len(df)} records for player ID {player['id']}"
+                    f"[fetch] - [stats] - [#{player_idx}/{len(players)}] Fetched and cached {len(df)} records for player ID {player['id']}"
                 )
 
             all_stats.append(df)

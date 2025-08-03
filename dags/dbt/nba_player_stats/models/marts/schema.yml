@@ -1,0 +1,107 @@
+version: 2
+
+sources:
+  - name: public
+    description: "Tablas crudas de estadísticas NBA"
+    tables:
+      - name: raw_players
+        description: "Datos crudos de jugadores NBA"
+
+models:
+  - name: player_career_stats
+    description: Aggregates historical career statistics for each NBA player, including totals, per-game averages, career highs, and calculated metrics such as shooting percentages and efficiency.
+    columns:
+      - name: player_id
+        description: Unique identifier of the player.
+      - name: player_name
+        description: Full name of the player.
+      - name: total_games_played
+        description: Total number of games played.
+      - name: games_won
+        description: Number of games won.
+      - name: games_lost
+        description: Number of games lost.
+      - name: total_field_goals_made
+        description: Total field goals made.
+      - name: total_field_goals_attempted
+        description: Total field goals attempted.
+      - name: total_three_pointers_made
+        description: Total three-point field goals made.
+      - name: total_three_pointers_attempted
+        description: Total three-point field goals attempted.
+      - name: total_free_throws_made
+        description: Total free throws made.
+      - name: total_free_throws_attempted
+        description: Total free throws attempted.
+      - name: total_offensive_rebounds
+        description: Total offensive rebounds.
+      - name: total_defensive_rebounds
+        description: Total defensive rebounds.
+      - name: total_rebounds
+        description: Total rebounds (offensive + defensive).
+      - name: total_assists
+        description: Total assists.
+      - name: total_steals
+        description: Total steals.
+      - name: total_blocks
+        description: Total blocks.
+      - name: total_turnovers
+        description: Total turnovers.
+      - name: total_personal_fouls
+        description: Total personal fouls.
+      - name: total_points
+        description: Total points scored.
+      - name: total_plus_minus
+        description: Total plus-minus value across all games.
+      - name: avg_field_goals_made
+        description: Average field goals made per game.
+      - name: avg_field_goals_attempted
+        description: Average field goals attempted per game.
+      - name: avg_three_pointers_made
+        description: Average three-pointers made per game.
+      - name: avg_three_pointers_attempted
+        description: Average three-pointers attempted per game.
+      - name: avg_free_throws_made
+        description: Average free throws made per game.
+      - name: avg_free_throws_attempted
+        description: Average free throws attempted per game.
+      - name: avg_rebounds
+        description: Average total rebounds per game.
+      - name: avg_assists
+        description: Average assists per game.
+      - name: avg_steals
+        description: Average steals per game.
+      - name: avg_blocks
+        description: Average blocks per game.
+      - name: avg_turnovers
+        description: Average turnovers per game.
+      - name: avg_points
+        description: Average points per game.
+      - name: avg_plus_minus
+        description: Average plus-minus per game.
+      - name: best_points_game
+        description: Highest number of points scored in a single game.
+      - name: best_rebounds_game
+        description: Highest number of rebounds in a single game.
+      - name: best_assists_game
+        description: Highest number of assists in a single game.
+      - name: best_steals_game
+        description: Highest number of steals in a single game.
+      - name: best_blocks_game
+        description: Highest number of blocks in a single game.
+      - name: first_game_date
+        description: Date of the first recorded game.
+      - name: last_game_date
+        description: Date of the most recent recorded game.
+      - name: seasons_played
+        description: Number of unique seasons played.
+      - name: career_field_goal_percentage
+        description: Career field goal shooting percentage.
+      - name: career_three_point_percentage
+        description: Career three-point shooting percentage.
+      - name: career_free_throw_percentage
+        description: Career free throw shooting percentage.
+      - name: win_percentage
+        description: Percentage of games won.
+      - name: points_per_shot_attempt
+        description: Offensive efficiency measured as points per total shot attempt (field goals + free throws).

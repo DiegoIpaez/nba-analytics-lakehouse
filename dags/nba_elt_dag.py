@@ -1,11 +1,24 @@
+import os
 from datetime import datetime, timedelta
 
 from airflow.decorators import dag, task, task_group
+from cosmos.profiles import PostgresUserPasswordProfileMapping
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
+from cosmos import (
+    DbtTaskGroup,
+    ProjectConfig,
+    ProfileConfig,
+    RenderConfig,
+    ExecutionConfig,
+)
 
-from include.constants import POSTGRES_CONN_ID
 from include.fetch_nba_data import fetch_players, fetch_player_stats
 from include.load_raw_nba_data import insert_players, insert_player_game_stats
+from include.constants import (
+    POSTGRES_CONN_ID,
+    DBT_EXECUTABLE_PATH,
+    DBT_NPS_PROJECT_PATH,
+)
 
 
 default_args = {
@@ -13,6 +26,20 @@ default_args = {
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
 }
+
+
+profile_config = ProfileConfig(
+    profile_name="default",
+    target_name="dev",
+    profile_mapping=PostgresUserPasswordProfileMapping(
+        conn_id=POSTGRES_CONN_ID,
+        profile_args={"schema": "public"},
+    ),
+)
+
+render_config = RenderConfig(
+    emit_datasets=False,
+)
 
 
 @dag(
@@ -75,8 +102,20 @@ def nba_elt_pipeline():
         load_players(players)
         load_player_stats(stats)
 
+    transform_group = DbtTaskGroup(
+        group_id="transform_group",
+        project_config=ProjectConfig(DBT_NPS_PROJECT_PATH),
+        profile_config=profile_config,
+        render_config=render_config,
+        execution_config=ExecutionConfig(dbt_executable_path=DBT_EXECUTABLE_PATH),
+    )
+
     extracted = extract_tasks()
-    create_tables >> load_tasks(players=extracted["players"], stats=extracted["stats"])
+    (
+        create_tables
+        >> load_tasks(players=extracted["players"], stats=extracted["stats"])
+        >> transform_group
+    )
 
 
 nba_elt_pipeline()
