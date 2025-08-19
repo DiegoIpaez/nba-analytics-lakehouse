@@ -8,7 +8,7 @@ sources:
         description: "Datos crudos de jugadores NBA"
 
 models:
-  - name: player_career_stats
+  - name: int_player_career_stats
     description: Aggregates historical career statistics for each NBA player, including totals, per-game averages, career highs, and calculated metrics such as shooting percentages and efficiency.
     columns:
       - name: player_id

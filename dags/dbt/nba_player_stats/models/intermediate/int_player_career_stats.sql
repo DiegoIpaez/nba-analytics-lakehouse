@@ -6,7 +6,7 @@ WITH source AS (
     JOIN {{ source('public', 'raw_players') }} as pd ON sd.player_id = pd.id
 ),
 
-player_totals AS (
+int_player_career_stats AS (
     SELECT 
         player_id,
         player_name,
@@ -119,7 +119,7 @@ final AS (
             ELSE NULL 
         END as points_per_shot_attempt
         
-    FROM player_totals
+    FROM int_player_career_stats
 )
 
 SELECT * FROM final

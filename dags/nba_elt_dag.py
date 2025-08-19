@@ -38,7 +38,7 @@ profile_config = ProfileConfig(
 )
 
 render_config = RenderConfig(
-    emit_datasets=False,
+    emit_datasets=True,
 )
 
 
