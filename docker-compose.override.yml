@@ -23,3 +23,32 @@ services:
     restart: unless-stopped
     volumes:
       - ${PWD}/.docker/redis:/data
+
+  superset:
+    image: apache/superset:latest
+    networks:
+      - airflow
+    environment:
+      SUPERSET_LOAD_EXAMPLES: "no"
+      SUPERSET_SECRET_KEY: "secret_key_change_me"
+    ports:
+      - "3001:3001"
+    volumes:
+      - superset_home:/app/superset_home
+    command:
+      - sh
+      - -c
+      - |
+        superset db upgrade && 
+        superset fab create-admin \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --email admin@example.com \
+          --password admin || true &&
+        pip install psycopg2-binary && 
+        superset init && 
+        superset run -h 0.0.0.0 -p 3001
+
+volumes:
+  superset_home:

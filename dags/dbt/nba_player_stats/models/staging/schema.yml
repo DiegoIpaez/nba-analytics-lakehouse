@@ -89,7 +89,7 @@ models:
       - name: matchup
         description: "Team matchup information (e.g., 'LAL vs. GSW')"
 
-      - name: win_loss
+      - name: game_result
         description: "Win/Loss indicator for the player's team"
         tests:
           - accepted_values:
@@ -97,22 +97,13 @@ models:
 
       - name: minutes_played
         description: "Minutes played in the game"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       # Field Goal Statistics
       - name: field_goals_made
         description: "Number of field goals made"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: field_goals_attempted
         description: "Number of field goals attempted"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: field_goal_percentage_calculated
         description: "Field goal percentage calculated from FGM/FGA"
@@ -126,15 +117,9 @@ models:
       # Three-Point Statistics
       - name: three_pointers_made
         description: "Number of three-pointers made"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: three_pointers_attempted
         description: "Number of three-pointers attempted"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: three_point_percentage_calculated
         description: "Three-point percentage calculated from 3PM/3PA"
@@ -148,15 +133,9 @@ models:
       # Free Throw Statistics
       - name: free_throws_made
         description: "Number of free throws made"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: free_throws_attempted
         description: "Number of free throws attempted"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: free_throw_percentage_calculated
         description: "Free throw percentage calculated from FTM/FTA"
@@ -170,58 +149,31 @@ models:
       # Rebounds
       - name: offensive_rebounds
         description: "Number of offensive rebounds"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: defensive_rebounds
         description: "Number of defensive rebounds"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: total_rebounds
         description: "Total number of rebounds (offensive + defensive)"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       # Other Statistics
       - name: assists
         description: "Number of assists"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: steals
         description: "Number of steals"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: blocks
         description: "Number of blocks"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: turnovers
         description: "Number of turnovers"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: personal_fouls
         description: "Number of personal fouls"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: points
         description: "Total points scored"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: plus_minus
         description: "Plus/minus statistic for the player"
@@ -232,15 +184,9 @@ models:
       # Calculated Fields
       - name: total_shots_made
         description: "Total shots made (FGM + 3PM + FTM)"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: total_shots_attempted
         description: "Total shots attempted (FGA + 3PA + FTA)"
-        # tests:
-        #   - dbt_utils.expression_is_true:
-        #       expression: ">= 0"
 
       - name: stats_validation_error
         description: "Data quality flag for impossible statistical combinations"
