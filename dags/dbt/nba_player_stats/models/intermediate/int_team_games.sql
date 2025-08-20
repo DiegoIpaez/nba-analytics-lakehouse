@@ -1,22 +1,54 @@
 WITH base AS (
     SELECT * FROM {{ ref('stg_player_stats') }}
-)
+),
+game_team_results AS (
+    SELECT
+        game_id,
+        season_id,
+        game_date,
+        player_team_name,
+        opponent_team_name,
+        is_home_game,
+        game_result,
+        MIN(matchup) AS matchup
+    FROM base
+    GROUP BY 
+        game_id, 
+        season_id, 
+        game_date, 
+        player_team_name, 
+        opponent_team_name, 
+        is_home_game, 
+        game_result
+),
+game_summary AS (
 SELECT
-    player_team_name AS team_name,
     game_id,
     season_id,
     game_date,
-    is_home_game,
-    opponent_team_name,
-    game_result,
-    COUNT(*) AS total_players_in_game,
-    MAX(CASE WHEN game_result = 'W' THEN 1 ELSE 0 END) AS game_won,
-    MAX(CASE WHEN game_result = 'L' THEN 1 ELSE 0 END) AS game_lost,
-    SUM(points) AS team_points,
-    SUM(total_rebounds) AS team_rebounds,
-    SUM(assists) AS team_assists,
-    SUM(steals) AS team_steals,
-    SUM(blocks) AS team_blocks,
-    SUM(turnovers) AS team_turnovers
-FROM base
-GROUP BY team_name, game_id, season_id, game_date, is_home_game, opponent_team_name, game_result
+    MIN(matchup) AS matchup,
+    MAX(CASE WHEN is_home_game = true THEN player_team_name END) AS home_team,
+    MAX(CASE WHEN is_home_game = false THEN player_team_name END) AS away_team,
+    MAX(CASE 
+        WHEN is_home_game = true AND game_result = 'W' THEN 1 
+        WHEN is_home_game = true AND game_result = 'L' THEN 0
+        ELSE NULL 
+    END) AS home_team_won,
+    MAX(CASE 
+        WHEN is_home_game = false AND game_result = 'W' THEN 1 
+        WHEN is_home_game = false AND game_result = 'L' THEN 0
+        ELSE NULL 
+    END) AS away_team_won
+FROM game_team_results
+GROUP BY game_id, season_id, game_date
+)
+SELECT
+    game_id,
+    season_id,
+    game_date,
+    matchup,
+    home_team,
+    away_team,
+    home_team_won,
+    away_team_won
+FROM game_summary

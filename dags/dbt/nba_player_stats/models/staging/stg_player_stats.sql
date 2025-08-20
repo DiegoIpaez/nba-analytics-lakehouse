@@ -9,6 +9,7 @@ renamed as (
         -- Game information
         sd."GAME_DATE"::date as game_date,
         sd."WL" as game_result,
+        sd."MATCHUP" as matchup,
         case
             when sd."MATCHUP" like '% vs. %' then split_part(sd."MATCHUP", ' vs. ', 1)
             when sd."MATCHUP" like '% @ %' then split_part(sd."MATCHUP", ' @ ', 2)
