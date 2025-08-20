@@ -8,8 +8,22 @@ renamed as (
         sd."Game_ID" as game_id,
         -- Game information
         sd."GAME_DATE"::date as game_date,
-        sd."MATCHUP" as matchup,
-        sd."WL" as win_loss,
+        sd."WL" as game_result,
+        case
+            when sd."MATCHUP" like '% vs. %' then split_part(sd."MATCHUP", ' vs. ', 1)
+            when sd."MATCHUP" like '% @ %' then split_part(sd."MATCHUP", ' @ ', 2)
+            else null
+        end as player_team_name,
+        case
+            when sd."MATCHUP" like '% vs. %' then split_part(sd."MATCHUP", ' vs. ', 2)
+            when sd."MATCHUP" like '% @ %' then split_part(sd."MATCHUP", ' @ ', 1)
+            else null
+        end as opponent_team_name,
+        case
+            when sd."MATCHUP" like '% vs. %' then true
+            when sd."MATCHUP" like '% @ %' then false
+            else null
+        end as is_home_game,
         sd."MIN" as minutes_played,
         -- Field goal statistics
         sd."FGM" as field_goals_made,
@@ -23,7 +37,7 @@ renamed as (
         sd."FG3M" as three_pointers_made,
         sd."FG3A" as three_pointers_attempted,
         case 
-            when sd."FG3A" > 0 then round("FG3M"::numeric / sd."FG3A"::numeric, 3)
+            when sd."FG3A" > 0 then round(sd."FG3M"::numeric / sd."FG3A"::numeric, 3)
             else null 
         end as three_point_percentage_calculated,
         sd."FG3_PCT" as three_point_percentage_original,
@@ -31,11 +45,11 @@ renamed as (
         sd."FTM" as free_throws_made,
         sd."FTA" as free_throws_attempted,
         case 
-            when sd."FTA" > 0 then round("FTM"::numeric / sd."FTA"::numeric, 3)
+            when sd."FTA" > 0 then round(sd."FTM"::numeric / sd."FTA"::numeric, 3)
             else null 
         end as free_throw_percentage_calculated,
         sd."FT_PCT" as free_throw_percentage_original,
-        -- Rebounts
+        -- Rebounds
         sd."OREB" as offensive_rebounds,
         sd."DREB" as defensive_rebounds,
         sd."REB" as total_rebounds,
