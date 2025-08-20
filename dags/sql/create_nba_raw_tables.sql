@@ -1,0 +1,44 @@
+CREATE TABLE IF NOT EXISTS raw_players (
+    id INTEGER PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    is_active BOOLEAN,
+    full_name VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS raw_player_stats (
+    "AST" INTEGER,
+    "BLK" INTEGER,
+    "DREB" INTEGER,
+    "FG3A" INTEGER,
+    "FG3M" INTEGER,
+    "FG3_PCT" NUMERIC(5, 3),
+    "FGA" INTEGER,
+    "FGM" INTEGER,
+    "FG_PCT" NUMERIC(5, 3),
+    "FTA" INTEGER,
+    "FTM" INTEGER,
+    "FT_PCT" NUMERIC(5, 3),
+    "GAME_DATE" VARCHAR(255),
+    "Game_ID" VARCHAR(20),
+    "MATCHUP" VARCHAR(20),
+    "MIN" INTEGER,
+    "OREB" INTEGER,
+    "PF" INTEGER,
+    "PLUS_MINUS" INTEGER,
+    "PTS" INTEGER,
+    "Player_ID" INTEGER,
+    "REB" INTEGER,
+    "SEASON_ID" VARCHAR(10),
+    "STL" INTEGER,
+    "TOV" INTEGER,
+    "VIDEO_AVAILABLE" SMALLINT,
+    "WL" CHAR(1),
+    "player_id" INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ("Player_ID", "Game_ID")
+);
+
+TRUNCATE TABLE raw_players;
+TRUNCATE TABLE raw_player_stats;

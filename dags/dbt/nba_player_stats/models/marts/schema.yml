@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: player_rankings
+    description: >
+      Model that builds a ranking of players based on career statistics.
+      Calculates totals, averages, KPIs, and rankings to compare player performance.
+    columns:
+      - name: player_id
+        description: Unique identifier of the player.
+      - name: player_name
+        description: Full name of the player.
+      - name: total_points
+        description: Total points scored throughout the player's career.
+      - name: total_rebounds
+        description: Total rebounds collected throughout the player's career.
+      - name: total_assists
+        description: Total assists throughout the player's career.
+      - name: games_won
+        description: Number of games won.
+      - name: total_games_played
+        description: Total number of games played in the career.
+      - name: avg_points
+        description: Average points per game.
+      - name: avg_rebounds
+        description: Average rebounds per game.
+      - name: avg_assists
+        description: Average assists per game.
+      - name: win_percentage
+        description: Win percentage (games won / games played).
+      - name: career_field_goal_percentage
+        description: Field goal percentage across the player's career.
+      - name: points_per_shot_attempt
+        description: Scoring efficiency, points scored per shot attempt.
+      - name: best_points_game
+        description: Highest points scored in a single game.
+      - name: best_rebounds_game
+        description: Highest rebounds collected in a single game.
+      - name: best_assists_game
+        description: Highest assists made in a single game.
+      - name: first_game_date
+        description: Date of the player's first game.
+      - name: last_game_date
+        description: Date of the player's last game.
+      - name: seasons_played
+        description: Number of seasons played.
+      - name: points_rank
+        description: Ranking by total points (highest to lowest).
+      - name: avg_points_rank
+        description: Ranking by average points per game.
+      - name: win_rank
+        description: Combined ranking by games won and win percentage.
+      - name: efficiency_rank
+        description: Ranking by scoring efficiency (points per shot attempt).

@@ -1,0 +1,54 @@
+services:
+  postgres_dbt:
+   image: postgres:15.4-alpine
+   volumes:
+     - ${PWD}/.docker/postgres:/var/lib/postgresql/data
+   networks:
+     - airflow
+   ports:
+     - 5433:5432
+   environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+   extra_hosts:
+     - "host.docker.internal:host-gateway"
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - airflow
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/.docker/redis:/data
+
+  superset:
+    image: apache/superset:latest
+    networks:
+      - airflow
+    environment:
+      SUPERSET_LOAD_EXAMPLES: "no"
+      SUPERSET_SECRET_KEY: "secret_key_change_me"
+    ports:
+      - "3001:3001"
+    volumes:
+      - superset_home:/app/superset_home
+    command:
+      - sh
+      - -c
+      - |
+        superset db upgrade && 
+        superset fab create-admin \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --email admin@example.com \
+          --password admin || true &&
+        pip install psycopg2-binary && 
+        superset init && 
+        superset run -h 0.0.0.0 -p 3001
+
+volumes:
+  superset_home:
